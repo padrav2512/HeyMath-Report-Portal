@@ -1,0 +1,193 @@
+[
+    {
+        "name": "School Logins Report",
+        "url": "https://report.heymath.com/reports/schoolLoginReport.action",
+        "method": "GET",
+        "multiClassEnabled": false,
+        "usesClassLevel": false,
+        "usesSubject": false,
+        "params": "\"onlyList\": \"true\",\n      \"timePeriod\": \"predefined\",\n      \"startDate\": \"<start_date>\",\n      \"endDate\": \"<end_date>\"",
+        "outputFile": "School Logins Report_<start_date>_<end_date>.csv",
+        "outputType": "csv",
+        "responseType": "json"
+    },
+    {
+        "name": "School Lessons Usage Report",
+        "url": "https://report.heymath.com/reports/schoolLessonReport.action",
+        "method": "GET",
+        "multiClassEnabled": false,
+        "usesClassLevel": false,
+        "usesSubject": false,
+        "params": "\"onlyList\": \"true\",\n      \"timePeriod\": \"predefined\",\n      \"startDate\": \"<start_date>\",\n      \"endDate\": \"<end_date>\"",
+        "outputFile": "School Lessons Usage Report_<start_date>_<end_date>.csv",
+        "outputType": "csv",
+        "responseType": "json"
+    },
+    {
+        "name": "School Assignments Usage Report",
+        "url": "https://report.heymath.com/reports/schoolTotalAssignmentReport.action",
+        "method": "GET",
+        "multiClassEnabled": false,
+        "usesClassLevel": false,
+        "usesSubject": false,
+        "params": "\"onlyList\": \"true\",\n      \"timePeriod\": \"predefined\",\n      \"startDate\": \"<start_date>\",\n      \"endDate\": \"<end_date>\"",
+        "outputFile": "School Assignments Usage Report_<start_date>_<end_date>.csv",
+        "outputType": "csv",
+        "responseType": "json"
+    },
+    {
+        "name": "Level Lessons Usage Report for each Class",
+        "url": "https://report.heymath.com/reports/schoolLessonReport.action",
+        "method": "GET",
+        "multiClassEnabled": true,
+        "usesClassLevel": true,
+        "usesSubject": false,
+        "params": "\"onlyList\":\"true\",\n\"schoolLevel\":\"<class>\",\n\"timePeriod\":\"predefined\",\n\"startDate\":\"<start_date>\",\n\"endDate\":\"<end_date>\"",
+        "outputFile": "Level Lessons Usage Report_<class>_<start_date>_<end_date>.csv",
+        "outputType": "csv",
+        "responseType": "json"
+    },
+    {
+        "name": "Teacher Assignment Log Quiz",
+        "url": "https://report.heymath.com/reports/allteacherQuizLogReports.action",
+        "method": "GET",
+        "multiClassEnabled": true,
+        "usesClassLevel": false,
+        "usesSubject": true,
+        "params": "\"subject\": \"<subject>\",\n    \"timePeriod\": \"predefined\",\n    \"startDate\": \"<start_date>\",\n    \"endDate\": \"<end_date>\"",
+        "outputFile": "TeacherQuizAssignment_<class>_<start_date>_<end_date>.csv",
+        "outputType": "csv",
+        "responseType": "json"
+    },
+    {
+        "name": "Teacher Assignment Log Worksheet",
+        "url": "https://report.heymath.com/reports/allteacherWorksheetLogReports.action",
+        "method": "GET",
+        "multiClassEnabled": true,
+        "usesClassLevel": false,
+        "usesSubject": true,
+        "params": "\"subject\": \"<subject>\",\n    \"timePeriod\": \"predefined\",\n    \"startDate\": \"<start_date>\",\n    \"endDate\": \"<end_date>\"",
+        "outputFile": "TeacherWorksheetAssignment_<class>_<start_date><end_date>.csv",
+        "outputType": "csv",
+        "responseType": "json"
+    },
+    {
+        "name": "Teacher Assignment Log Prasso",
+        "url": "https://report.heymath.com/reports/allteacherPrassoLogReports.action",
+        "method": "GET",
+        "multiClassEnabled": true,
+        "usesClassLevel": false,
+        "usesSubject": true,
+        "params": "\"subject\": \"<subject>\",\n    \"timePeriod\": \"predefined\",\n    \"startDate\": \"<start_date>\",\n    \"endDate\": \"<end_date>\"",
+        "outputFile": "TeacherPrassoAssignment_<class>_<start_date><end_date>.csv",
+        "outputType": "csv",
+        "responseType": "json"
+    },
+    {
+        "name": "Teacher Assignment Log Reading",
+        "url": "https://report.heymath.com/reports/allteacherReadingLogReports.action",
+        "method": "GET",
+        "multiClassEnabled": true,
+        "usesClassLevel": false,
+        "usesSubject": true,
+        "params": "\"subject\": \"<subject>\",\n    \"timePeriod\": \"predefined\",\n    \"startDate\": \"<start_date>\",\n    \"endDate\": \"<end_date>\"",
+        "outputFile": "TeacherReadingAssignment_<class>_<start_date><end_date>.csv",
+        "outputType": "csv",
+        "responseType": "json"
+    },
+    {
+        "name": "All Teachers Usage Logins",
+        "url": "https://report.heymath.com/reports/tchrloginInfo.action",
+        "method": "GET",
+        "multiClassEnabled": false,
+        "usesClassLevel": false,
+        "usesSubject": false,
+        "params": "\n      \"timePeriod\": \"predefined\",\n      \"startDate\": \"<start_date>\",\n      \"endDate\": \"<end_date>\",\n\"userId\": \"all\",\n\"type\": \"all\"",
+        "outputFile": "All Teachers Usage Logins_<start_date>_<end_date>.csv",
+        "outputType": "csv",
+        "responseType": "json"
+    },
+    {
+        "name": "All Teachers Usage Lesson Accessed",
+        "url": "https://report.heymath.com/reports/tchrlesson.action",
+        "method": "GET",
+        "multiClassEnabled": false,
+        "usesClassLevel": false,
+        "usesSubject": false,
+        "params": "\n      \"timePeriod\": \"predefined\",\n      \"startDate\": \"<start_date>\",\n      \"endDate\": \"<end_date>\",\n\"type\": \"all\"",
+        "outputFile": "All Teachers Usage Lesson Accessed_<start_date>_<end_date>.csv",
+        "outputType": "csv",
+        "responseType": "json"
+    },
+    {
+        "name": "All Teachers Usage Assignments assigned",
+        "url": "https://report.heymath.com/reports/allTeacherAssignmentCount.action",
+        "method": "GET",
+        "multiClassEnabled": false,
+        "usesClassLevel": false,
+        "usesSubject": false,
+        "params": "\"type\": \"all\",\n      \"timePeriod\": \"predefined\",\n      \"startDate\": \"<start_date>\",\n      \"endDate\": \"<end_date>\"",
+        "outputFile": "All Teachers Usage Assignments assigned_<start_date>_<end_date>.csv",
+        "outputType": "csv",
+        "responseType": "json"
+    },
+	{
+  "name": "Class Login Report",
+  "url": "https://report.heymath.com/reports/stuLoginInfoForTchr.action",
+  "method": "GET",
+  "multiClassEnabled": true,
+  "usesClassLevel": true,
+  "usesSubject": false,
+  "params": "\"onlyList\": \"true\",\n      \"timePeriod\": \"predefined\",\n      \"startDate\": \"<start_date>\",\n      \"endDate\": \"<end_date>\",\n      \"userId\": \"\",\n      \"classList\": \"<class>\"",
+  "outputFile": "Class Login Report_<class>_<start_date>_<end_date>.csv",
+  "outputType": "csv",
+  "responseType": "json"
+},
+{
+  "name": "Class Lessons Report",
+  "url": "https://report.heymath.com/reports/selectedClassesStudentlesson.action",
+  "method": "GET",
+  "multiClassEnabled": true,
+  "usesClassLevel": true,
+  "usesSubject": false,
+  "params": "\"onlyLessonList\": \"true\",\n      \"lessontab\": \"2\",\n      \"timePeriod\": \"predefined\",\n      \"startDate\": \"<start_date>\",\n      \"endDate\": \"<end_date>\",\n      \"classList\": \"<class>\"",
+  "outputFile": "Class Lessons Report_<class>_<start_date>_<end_date>.csv",
+  "outputType": "csv",
+  "responseType": "json"
+},
+{
+  "name": "Class Assignment Report",
+  "url": "https://report.heymath.com/reports/stuAssessmentInfoForTchr.action",
+  "method": "GET",
+  "multiClassEnabled": true,
+  "usesClassLevel": true,
+  "usesSubject": false,
+  "params": "\"userId\": \"\",\n      \"assessmentType\": \"1\",\n      \"timePeriod\": \"predefined\",\n      \"startDate\": \"<start_date>\",\n      \"endDate\": \"<end_date>\",\n      \"classList\": \"<class>\"",
+  "outputFile": "Class Assignment Report_<class>_<start_date>_<end_date>.csv",
+  "outputType": "csv",
+  "responseType": "json"
+},
+{
+  "name": "Student Quiz Performance Report",
+  "key": "SQR",
+  "method": "GET",
+  "url": "https://report.heymath.com/reports/stuPerformanceInfoForTchr.action",
+  "params": "\"timePeriod\":\"predefined\",\"assessmentType\":\"1\",\"startDate\":\"<start_date>\",\"endDate\":\"<end_date>\",\"classList\":\"<class>\"",
+  "usesClass": true,
+  "usesDates": true,
+  "extract": "stringified_list_in_data",
+  "expected_headers": [
+    "userName",
+    "userId",
+    "levelSection",
+    "levelName",
+    "submissionRate",
+    "averageScore",
+    "ongoingAqcCount",
+    "accessedAqcCount"
+  ],
+  "outfile": "Student Quiz Performance_<class>_<start_date>_<end_date>.csv"
+
+
+}
+]

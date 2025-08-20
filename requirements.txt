@@ -1,0 +1,6 @@
+streamlit>=1.36,<1.41
+pandas>=2.2
+openpyxl>=3.1
+python-dateutil>=2.9
+requests>=2.31
+PyYAML>=6.0    # only if your config uses YAML; safe to include
