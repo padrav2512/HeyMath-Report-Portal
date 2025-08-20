@@ -8,13 +8,21 @@ import zipfile
 from datetime import date
 from pathlib import Path
 from datetime import datetime
-
 import pandas as pd
 import streamlit as st
+import sys
+import platform, tempfile
+from pathlib import Path
+OUTDIR_BASE = Path(os.getenv("HM_OUTDIR", "/tmp/report_outputs"))
+OUTDIR_BASE.mkdir(parents=True, exist_ok=True)
+
 
 st.set_page_config(page_title="HeyMath Reports Config", page_icon="📊", layout="centered")
 st.title("HeyMath! Reports — Setup")
 
+st.caption({"OS": platform.platform(),
+            "TMP": tempfile.gettempdir(),
+            "Can write /tmp": os.access("/tmp", os.W_OK)})
 # ========= Config =========
 EXCEL_PATH = "School_Details_filled_with_subjects_final.xlsx"  # adjust path if needed
 SUBJECT_MAX = 10  # SubjectCode 1..SubjectCode 10
@@ -229,13 +237,24 @@ if st.button("Run now"):
     # Lock the run_id for this execution and future downloads
     st.session_state["run_id"] = candidate_run_id
     try:
+        # This portion works for windows and ubuntu but not streamlit cloud
+        # result = subprocess.run(
+            # ["python", "test_runner_all.py",
+             # "--config", "config.json",
+             # "--outdir", "report_outputs",
+             # "--run-id", st.session_state["run_id"]],
+            # capture_output=True, text=True, check=False
+        # )
+        outdir = str(OUTDIR_BASE)  # /tmp/report_outputs on Cloud
+
         result = subprocess.run(
-            ["python", "test_runner_all.py",
+            [sys.executable, "-u", "test_runner_all.py",
              "--config", "config.json",
-             "--outdir", "report_outputs",
+             "--outdir", outdir,
              "--run-id", st.session_state["run_id"]],
             capture_output=True, text=True, check=False
         )
+
         st.text_area("Output", result.stdout + "\n" + result.stderr, height=320)
         if result.returncode == 0:
             st.success(f"Finished. Run ID: {st.session_state['run_id']}")
@@ -250,9 +269,12 @@ st.markdown("### Download current run")
 
 # Use the last successful run if available; otherwise show the candidate
 run_id = st.session_state.get("run_id") or candidate_run_id
-run_folder = Path("report_outputs") / run_id
 
-run_folder = Path("report_outputs") / run_id
+# This portion works for windows and ubuntu but not streamlit cloud
+#run_folder = Path("report_outputs") / run_id
+
+run_folder = OUTDIR_BASE / run_id
+
 if run_folder.exists():
     files = sorted(list(run_folder.glob("*.csv")) + list(run_folder.glob("*.xls")) + list(run_folder.glob("*.xlsx")))
     if not files:
