@@ -64,6 +64,9 @@ def slug(s: str) -> str:
     return re.sub(r"[^A-Za-z0-9._-]+", "", (s or "").replace(" ", "_"))
 
 # ========= Load Excel =========
+if st.button("🔄 Reload Excel Data"):
+    st.cache_data.clear()
+    st.rerun()
 master_df = load_master(EXCEL_PATH)
 if master_df.empty:
     st.stop()
@@ -309,3 +312,4 @@ if run_folder.exists():
         )
 else:
     st.info("Run the reports to enable downloads for this run.")
+
