@@ -28,7 +28,7 @@ EXCEL_PATH = "School_Details_filled_with_subjects_final.xlsx"  # adjust path if 
 SUBJECT_MAX = 10  # SubjectCode 1..SubjectCode 10
 
 # ========= Helpers =========
-#@st.cache_data(show_spinner=False)
+@st.cache_data(show_spinner=False)
 def load_master(path: str) -> pd.DataFrame:
     if not Path(path).exists():
         st.error(f"Master Excel not found: {path}")
@@ -64,9 +64,9 @@ def slug(s: str) -> str:
     return re.sub(r"[^A-Za-z0-9._-]+", "", (s or "").replace(" ", "_"))
 
 # ========= Load Excel =========
-if st.button("🔄 Reload Excel Data"):
-    st.cache_data.clear()
-    st.rerun()
+#if st.button("🔄 Reload Excel Data"):
+    #st.cache_data.clear()
+    #st.rerun()
 master_df = load_master(EXCEL_PATH)
 if master_df.empty:
     st.stop()
@@ -312,5 +312,6 @@ if run_folder.exists():
         )
 else:
     st.info("Run the reports to enable downloads for this run.")
+
 
 
