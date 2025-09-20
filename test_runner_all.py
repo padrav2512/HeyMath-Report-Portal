@@ -86,6 +86,16 @@ def decode_maybe_json(value):
             break
     return value
 
+def runs_teacher_reports_from_ml_map():
+    """Map each selected level to the Maths Lab subject UUID for the 4 ML teacher logs."""
+    runs = []
+    for lvl in levels:
+        code = (lvl or {}).get("code", "")
+        subj_uuid = ml_subject_map_by_lvl.get(code, "")
+        if code and subj_uuid:
+            runs.append(({"code": code}, {"code": subj_uuid}))
+    return runs  # empty list => skip if nothing mapped
+
 # ============================================
 # Excel: discover sections + friendly label map
 # ============================================
@@ -229,7 +239,8 @@ def build_params(report: dict, class_code: str, subject_code: str) -> dict:
     param_str = (param_str.replace("<start_date>", START_DATE)
                            .replace("<end_date>", END_DATE)
                            .replace("<class>", class_code or "")
-                           .replace("<subject>", subject_code or ""))
+                           .replace("<subject>", subject_code or "")
+                           .replace("<mlsubject>", subject_code or ""))
     params = json.loads("{" + param_str + "}") if param_str else {}
 
     # Safety: SQR requires assessmentType=1 in many deployments
@@ -261,6 +272,7 @@ school_name        = (config.get("schoolName") or "").strip()
 school_short_code  = (config.get("schoolShortCode") or "").strip()
 grade_label_map    = config.get("gradeLabelMap", {})       # {"04A0":"Grade 4 ...", "04":"Grade 4", ...}
 subject_map_by_lvl = config.get("subjectMapByLevel", {})   # {"04": "<uuid>", ...}
+ml_subject_map_by_lvl = config.get("mlSubjectMapByLevel", {}) 
 NEED_CLASS         = bool(config.get("needClassReports", False))
 
 # Build headers + cookies (honor 'cookie' header if provided)
@@ -331,6 +343,13 @@ OTHER_REPORTS = [
     "Teacher Assignment Log Worksheet",
     "Teacher Assignment Log Prasso",
     "Teacher Assignment Log Reading",
+    
+    # NEW Maths Lab variants
+    "Teacher Assignment Log Quiz Maths Lab",
+    "Teacher Assignment Log Worksheet Maths Lab",
+    "Teacher Assignment Log Prasso Maths Lab",
+    "Teacher Assignment Log Reading Maths Lab",
+    
     "All Teachers Usage Logins",
     "All Teachers Usage Lesson Accessed",
     "All Teachers Usage Assignments assigned",
@@ -356,6 +375,11 @@ EXTRACT_MAP = {
     "Teacher Assignment Log Worksheet": "direct_list",
     "Teacher Assignment Log Prasso": "direct_list",
     "Teacher Assignment Log Reading": "direct_list",
+    
+    "Teacher Assignment Log Quiz Maths Lab": "direct_list",
+    "Teacher Assignment Log Worksheet Maths Lab": "direct_list",
+    "Teacher Assignment Log Prasso Maths Lab": "direct_list",
+    "Teacher Assignment Log Reading Maths Lab": "direct_list",
 
     "All Teachers Usage Logins": "direct_list",
     "All Teachers Usage Lesson Accessed": "lessoninfo",
@@ -397,6 +421,13 @@ RUN_PLAN = {
     "Teacher Assignment Log Worksheet": runs_teacher_reports_from_map(),
     "Teacher Assignment Log Prasso": runs_teacher_reports_from_map(),
     "Teacher Assignment Log Reading": runs_teacher_reports_from_map(),
+    
+    # Maths Lab teacher reports
+    "Teacher Assignment Log Quiz Maths Lab":       runs_teacher_reports_from_ml_map(),
+    "Teacher Assignment Log Worksheet Maths Lab":  runs_teacher_reports_from_ml_map(),
+    "Teacher Assignment Log Prasso Maths Lab":     runs_teacher_reports_from_ml_map(),
+    "Teacher Assignment Log Reading Maths Lab":    runs_teacher_reports_from_ml_map(),
+
 
     # usage rollups (single run)
     "All Teachers Usage Logins": [({}, {})],
