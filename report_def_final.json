@@ -95,6 +95,54 @@
         "outputType": "csv",
         "responseType": "json"
     },
+	    {
+        "name": "Teacher Assignment Log Quiz Maths Lab",
+        "url": "https://report.heymath.com/reports/allteacherQuizLogReports.action",
+        "method": "GET",
+        "multiClassEnabled": true,
+        "usesClassLevel": false,
+        "usesSubject": true,
+        "params": "\"subject\": \"<mlsubject>\",\n    \"timePeriod\": \"predefined\",\n    \"startDate\": \"<start_date>\",\n    \"endDate\": \"<end_date>\"",
+        "outputFile": "TeacherQuizAssignment_ MathsLab_<class>_<start_date>_<end_date>.csv",
+        "outputType": "csv",
+        "responseType": "json"
+    },
+    {
+        "name": "Teacher Assignment Log Worksheet Maths Lab",
+        "url": "https://report.heymath.com/reports/allteacherWorksheetLogReports.action",
+        "method": "GET",
+        "multiClassEnabled": true,
+        "usesClassLevel": false,
+        "usesSubject": true,
+        "params": "\"subject\": \"<mlsubject>\",\n    \"timePeriod\": \"predefined\",\n    \"startDate\": \"<start_date>\",\n    \"endDate\": \"<end_date>\"",
+        "outputFile": "TeacherWorksheetAssignment_MathsLab_<class>_<start_date><end_date>.csv",
+        "outputType": "csv",
+        "responseType": "json"
+    },
+    {
+        "name": "Teacher Assignment Log Prasso Maths Lab",
+        "url": "https://report.heymath.com/reports/allteacherPrassoLogReports.action",
+        "method": "GET",
+        "multiClassEnabled": true,
+        "usesClassLevel": false,
+        "usesSubject": true,
+        "params": "\"subject\": \"<mlsubject>\",\n    \"timePeriod\": \"predefined\",\n    \"startDate\": \"<start_date>\",\n    \"endDate\": \"<end_date>\"",
+        "outputFile": "TeacherPrassoAssignment_MathsLab_<class>_<start_date><end_date>.csv",
+        "outputType": "csv",
+        "responseType": "json"
+    },
+    {
+        "name": "Teacher Assignment Log Reading Maths Lab",
+        "url": "https://report.heymath.com/reports/allteacherReadingLogReports.action",
+        "method": "GET",
+        "multiClassEnabled": true,
+        "usesClassLevel": false,
+        "usesSubject": true,
+        "params": "\"subject\": \"<mlsubject>\",\n    \"timePeriod\": \"predefined\",\n    \"startDate\": \"<start_date>\",\n    \"endDate\": \"<end_date>\"",
+        "outputFile": "TeacherReadingAssignment_MathsLab_<class>_<start_date><end_date>.csv",
+        "outputType": "csv",
+        "responseType": "json"
+    },
     {
         "name": "All Teachers Usage Logins",
         "url": "https://report.heymath.com/reports/tchrloginInfo.action",
