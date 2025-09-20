@@ -25,6 +25,7 @@ st.caption({"OS": platform.platform(),
             "Can write /tmp": os.access("/tmp", os.W_OK)})
 # ========= Config =========
 EXCEL_PATH = "School_Details_filled_with_subjects_final.xlsx"  # adjust path if needed
+EXCEL_PATH1 = "School_Details_filled_with_MathsLabsubjects_final.xlsx"  # adjust path if needed
 SUBJECT_MAX = 10  # SubjectCode 1..SubjectCode 10
 
 # ========= Helpers =========
@@ -63,41 +64,99 @@ def safe_date_str(d: date) -> str:
 def slug(s: str) -> str:
     return re.sub(r"[^A-Za-z0-9._-]+", "", (s or "").replace(" ", "_"))
 
+import re
+def pick_col_ci(df, *preferred_names):
+    """Case/space/underscore-insensitive column picker."""
+    def norm_col(s): return re.sub(r'[^a-z0-9]+', '', str(s).lower())
+    cmap = {norm_col(c): c for c in df.columns}
+
+    # try exact preferred names
+    for name in preferred_names:
+        k = norm_col(name)
+        if k in cmap: return cmap[k]
+
+    # fallback: any column that contains both 'short' and 'code'
+    for k, orig in cmap.items():
+        if 'short' in k and 'code' in k:
+            return orig
+    return None
+
 # ========= Load Excel =========
-#if st.button("🔄 Reload Excel Data"):
-    #st.cache_data.clear()
-    #st.rerun()
+
+# --- Main master (required) ---
 master_df = load_master(EXCEL_PATH)
+st.write(f"✅ Loaded Excel with {master_df.shape[0]} rows and {master_df.shape[1]} columns")
 if master_df.empty:
+    st.error("The main School Details Excel is empty. Please upload a valid file.")
+    st.stop()
+master_df.columns = [str(c).strip() for c in master_df.columns]
+
+# Canonicalise main headers (tolerant to “School Details”, “School Short Code”, etc.)
+name_col  = pick_col_ci(master_df, "SchoolName", "School Name", "School Details", "School")
+short_col = pick_col_ci(master_df, "ShortCode", "Short Code", "School Short Code", "SchoolShortCode")
+grade_col = pick_col_ci(master_df, "GradeLabel", "Grade Label", "LevelLabel", "Grade")
+
+if not name_col or not short_col:
+    st.error("Missing school name / short code columns in the main Excel.")
     st.stop()
 
-# Validate required columns quickly
-required = {"SchoolName", "ShortCode", "GradeLabel"}
-missing_cols = required - set(master_df.columns)
-if missing_cols:
-    st.error(f"Missing required columns in Excel: {', '.join(sorted(missing_cols))}")
-    st.stop()
+master_df = master_df.rename(columns={
+    name_col:  "SchoolName",
+    short_col: "ShortCode",
+    **({grade_col: "GradeLabel"} if grade_col else {})
+})
 
-# Build school options
+# --- Maths Lab master (optional) ---
+ml_master_df = pd.DataFrame()
+if EXCEL_PATH1 and os.path.exists(EXCEL_PATH1):
+    ml_master_df = load_master(EXCEL_PATH1)
+    if not ml_master_df.empty:
+        ml_master_df.columns = [str(c).strip() for c in ml_master_df.columns]
+        st.caption(f"✅ Loaded Maths Lab Excel with {ml_master_df.shape[0]} rows and {ml_master_df.shape[1]} columns")
+    else:
+        st.info("ℹ️ Maths Lab Excel loaded but is empty — Maths Lab reports will be skipped.")
+else:
+    st.info("ℹ️ No Maths Lab Excel provided — Maths Lab reports will be skipped.")
+
+# Build school options (from canonical columns)
 schools_df = master_df[["SchoolName", "ShortCode"]].dropna().drop_duplicates()
-school_options = [f"{row.ShortCode} — {row.SchoolName}" for _, row in schools_df.iterrows()]
-school_options = sorted(school_options, key=lambda s: s.split(" — ", 1)[-1].lower())
+school_options = sorted(
+    [f"{row.ShortCode} — {row.SchoolName}" for _, row in schools_df.iterrows()],
+    key=lambda s: s.split(" — ", 1)[-1].lower()
+)
 
 # --- School selection (reactive) ---
 school_choice = st.selectbox("School", ["— Select a school —"] + school_options, index=0, key="school_select")
-
 if school_choice == "— Select a school —":
     st.info("Pick a school to load Classes (Levels) and continue.")
     st.stop()
 
-# Resolve selected school fields
+# Resolve selected school fields  (⚠️ no extra indentation here)
 short_code = school_choice.split(" — ", 1)[0].strip()
-school_row = schools_df[schools_df["ShortCode"] == short_code].iloc[0]
-school_name = str(school_row.SchoolName).strip()
 
-# Restrict to this school’s rows
-school_rows = master_df[master_df["ShortCode"] == short_code].copy()
+# Filter Maths Lab rows for this school (tolerant column name)
+ml_school_rows = pd.DataFrame()
+if not ml_master_df.empty:
+    ml_short_col = pick_col_ci(ml_master_df, "School Short Code", "ShortCode", "Short Code", "SchoolShortCode")
+    if ml_short_col:
+        ml_school_rows = ml_master_df[
+            ml_master_df[ml_short_col].astype(str).str.strip().str.casefold()
+            == short_code.strip().casefold()
+        ].copy()
+    else:
+        st.warning("Maths Lab Excel: couldn’t find a Short Code column; skipping Maths Lab mapping for this school.")
+
+# Resolve main school row and all rows for this school (canonical columns)
+school_row = schools_df[schools_df["ShortCode"].astype(str).str.strip().str.casefold()
+                        == short_code.strip().casefold()].iloc[0]
+
+school_name = str(school_row.SchoolName).strip()
+school_rows = master_df[master_df["ShortCode"].astype(str).str.strip().str.casefold()
+                        == short_code.strip().casefold()].copy()
 school_rows.columns = [str(c).strip() for c in school_rows.columns]
+
+
+
 
 # ---------- Build grade labels by scanning SubjectCode columns ----------
 base_label = (
@@ -105,6 +164,12 @@ base_label = (
     if "GradeLabel" in school_rows.columns and not school_rows["GradeLabel"].dropna().empty
     else "Grade"
 )
+# Add this for Maths Lab file (may be empty if file absent)
+# ml_school_rows = pd.DataFrame()
+# if not ml_master_df.empty:
+    # ml_school_rows = ml_master_df[ml_master_df["ShortCode"] == short_code].copy()
+    # ml_school_rows.columns = [str(c).strip() for c in ml_school_rows.columns]
+
 
 indices_with_data = []
 for i in range(1, SUBJECT_MAX + 1):
@@ -187,11 +252,29 @@ if submitted:
     if missing:
         st.warning("No SubjectCode found for: " + ", ".join(missing) + ". They will be skipped when running.")
 
+
+    # NEW: Maths Lab subject map (optional)
+    ml_subject_map_by_level = {}
+    ml_missing = []
+    if not ml_school_rows.empty:
+        for lv in levels:
+            lbl = lv["name"]
+            code = lv["code"]
+            uuid = subject_for_grade_wide(ml_school_rows, lbl)
+            if uuid:
+                ml_subject_map_by_level[code] = uuid
+            else:
+                ml_missing.append(f"{lbl} ({code})")
+    if ml_missing and not ml_school_rows.empty:
+        st.warning("Maths Lab — no SubjectCode for: " + ", ".join(ml_missing) + ". They will be skipped.")
+
+
     cfg = {
         "schoolName": school_name,                # display name
         "schoolShortCode": short_code,            # short code (e.g., AAIS)
         "levels": levels,                         # [{code, name}]
         "subjectMapByLevel": subject_map_by_level,# {"01": "<uuid>", ...}
+        "mlSubjectMapByLevel": ml_subject_map_by_level,
         "gradeLabelMap": {lv["code"]: lv["name"] for lv in levels},  # optional
         "dateRange": {"start": ddmmyyyy(start), "end": ddmmyyyy(end)},
         "headers": headers
@@ -312,6 +395,3 @@ if run_folder.exists():
         )
 else:
     st.info("Run the reports to enable downloads for this run.")
-
-
-
